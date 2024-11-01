@@ -4,16 +4,7 @@ import NetworkExtension
 public extension NEVPNStatus {
     var isEnabled: Bool {
         switch self {
-        case .connecting, .connected, .disconnected, .reasserting:
-            return true
-        default:
-            return false
-        }
-    }
-
-    var isStarted: Bool {
-        switch self {
-        case .connecting, .connected, .reasserting:
+        case .connected, .disconnected, .reasserting:
             return true
         default:
             return false

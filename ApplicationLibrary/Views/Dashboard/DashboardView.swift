@@ -83,11 +83,9 @@ public struct DashboardView: View {
     }
 
     struct DashboardView1: View {
-        @Environment(\.openURL) var openURL
         @EnvironmentObject private var environments: ExtensionEnvironments
         @EnvironmentObject private var profile: ExtensionProfile
         @State private var alert: Alert?
-        @State private var notStarted = false
 
         var body: some View {
             VStack {
@@ -95,65 +93,11 @@ public struct DashboardView: View {
             }
             .alertBinding($alert)
             .onChangeCompat(of: profile.status) { newValue in
-                if newValue == .connected {
-                    notStarted = false
-                }
                 if newValue == .disconnecting || newValue == .connected {
                     Task {
                         await checkServiceError()
-                        if newValue == .connected {
-                            await checkDeprecatedNotes()
-                        }
-                    }
-                } else if newValue == .connecting {
-                    notStarted = true
-                } else if newValue == .disconnected {
-                    if #available(iOS 16.0, macOS 13.0, tvOS 17.0, *) {
-                        if notStarted {
-                            Task {
-                                await checkLastDisconnectError()
-                            }
-                        }
                     }
                 }
-            }
-        }
-
-        private nonisolated func checkDeprecatedNotes() async {
-            NSLog("check DR")
-            do {
-                let reports = try LibboxNewStandaloneCommandClient()!.getDeprecatedNotes()
-                if reports.hasNext() {
-                    NSLog("has next")
-                    await MainActor.run {
-                        loopShowDeprecateNotes(reports)
-                    }
-                } else {
-                    NSLog("no next")
-                }
-            } catch {
-                await MainActor.run {
-                    alert = Alert(error)
-                }
-            }
-        }
-
-        @MainActor
-        private func loopShowDeprecateNotes(_ reports: any LibboxDeprecatedNoteIteratorProtocol) {
-            if reports.hasNext() {
-                let report = reports.next()!
-                NSLog("show next")
-                alert = Alert(
-                    title: Text("Deprecated Warning"),
-                    message: Text(report.message()),
-                    primaryButton: .cancel(Text("Ok")) {
-                        loopShowDeprecateNotes(reports)
-                    },
-                    secondaryButton: .default(Text("Documentation")) {
-                        openURL(URL(string: report.migrationLink)!)
-                        loopShowDeprecateNotes(reports)
-                    }
-                )
             }
         }
 
@@ -167,48 +111,5 @@ public struct DashboardView: View {
                 alert = Alert(title: Text("Service Error"), message: Text(message))
             }
         }
-
-        @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
-        private nonisolated func checkLastDisconnectError() async {
-            var myError: NSError
-            do {
-                try await profile.fetchLastDisconnectError()
-                return
-            } catch {
-                myError = error as NSError
-            }
-            #if os(macOS)
-                if myError.domain == "Library.FullDiskAccessPermissionRequired" {
-                    await MainActor.run {
-                        alert = Alert(
-                            title: Text("Full Disk Access permission is required"),
-                            message: Text("Please grant the permission for SFMExtension, then we can continue."),
-                            primaryButton: .default(Text("Authorize"), action: openFDASettings),
-                            secondaryButton: .cancel()
-                        )
-                    }
-                    return
-                }
-            #endif
-            let message = myError.localizedDescription
-            await MainActor.run {
-                alert = Alert(title: Text("Service Error"), message: Text(message))
-            }
-        }
-
-        #if os(macOS)
-
-            private func openFDASettings() {
-                if NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")!) {
-                    return
-                }
-                if #available(macOS 13, *) {
-                    NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/System Settings.app"))
-                } else {
-                    NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/System Preferences.app"))
-                }
-            }
-
-        #endif
     }
 }

@@ -1,9 +1,6 @@
 import Foundation
 import Libbox
 import NetworkExtension
-#if os(iOS)
-    import WidgetKit
-#endif
 
 open class ExtensionProvider: NEPacketTunnelProvider {
     public var username: String? = nil
@@ -35,7 +32,6 @@ open class ExtensionProvider: NEPacketTunnelProvider {
         LibboxRedirectStderr(FilePath.cacheDirectory.appendingPathComponent("stderr.log").relativePath, &error)
         if let error {
             writeFatalError("(packet-tunnel) redirect stderr error: \(error.localizedDescription)")
-            return
         }
 
         await LibboxSetMemoryLimit(!SharedPreferences.ignoreMemoryLimit.get())
@@ -52,16 +48,13 @@ open class ExtensionProvider: NEPacketTunnelProvider {
         }
         writeMessage("(packet-tunnel): Here I stand")
         await startService()
-        #if os(iOS)
-            if #available(iOS 18.0, *) {
-                ControlCenter.shared.reloadControls(ofKind: ExtensionProfile.controlKind)
-            }
-        #endif
     }
 
     func writeMessage(_ message: String) {
         if let commandServer {
             commandServer.writeMessage(message)
+        } else {
+            NSLog(message)
         }
     }
 
@@ -158,11 +151,6 @@ open class ExtensionProvider: NEPacketTunnelProvider {
         #if os(macOS)
             if reason == .userInitiated {
                 await SharedPreferences.startedByUser.set(reason == .userInitiated)
-            }
-        #endif
-        #if os(iOS)
-            if #available(iOS 18.0, *) {
-                ControlCenter.shared.reloadControls(ofKind: ExtensionProfile.controlKind)
             }
         #endif
     }

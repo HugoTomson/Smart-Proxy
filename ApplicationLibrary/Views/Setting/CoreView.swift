@@ -3,7 +3,6 @@ import Libbox
 import Library
 import SwiftUI
 
-@MainActor
 public struct CoreView: View {
     @State private var isLoading = true
 
@@ -52,17 +51,13 @@ public struct CoreView: View {
 
     private nonisolated func loadSettings() async {
         if ApplicationLibrary.inPreview {
-            await MainActor.run {
-                version = "<redacted>"
-                dataSize = LibboxFormatBytes(1000 * 1000 * 10)
-                isLoading = false
-            }
+            version = "<redacted>"
+            dataSize = LibboxFormatBytes(1000 * 1000 * 10)
+            isLoading = false
         } else {
-            await MainActor.run {
-                version = LibboxVersion()
-                dataSize = "Loading..."
-                isLoading = false
-            }
+            version = LibboxVersion()
+            dataSize = "Loading..."
+            isLoading = false
             await loadSettingsBackground()
         }
     }

@@ -51,7 +51,7 @@ public struct ActiveDashboardView: View {
             #if os(iOS) || os(tvOS)
                 if ApplicationLibrary.inPreview || profile.status.isConnectedStrict {
                     Picker("Page", selection: $selection) {
-                        ForEach(DashboardPage.enabledCases()) { page in
+                        ForEach(DashboardPage.allCases) { page in
                             page.label
                         }
                     }
@@ -61,15 +61,12 @@ public struct ActiveDashboardView: View {
                         .navigationBarTitleDisplayMode(.inline)
                     #endif
                     TabView(selection: $selection) {
-                        ForEach(DashboardPage.enabledCases()) { page in
+                        ForEach(DashboardPage.allCases) { page in
                             page.contentView($profileList, $selectedProfileID, $systemProxyAvailable, $systemProxyEnabled)
                                 .tag(page)
                         }
                     }
-                    #if os(iOS)
-                    .navigationBarTitleDisplayMode(.inline)
-                    #endif
-                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .tabViewStyle(.page(indexDisplayMode: .always))
                 } else {
                     OverviewView($profileList, $selectedProfileID, $systemProxyAvailable, $systemProxyEnabled)
                 }
@@ -137,9 +134,9 @@ public struct ActiveDashboardView: View {
                 systemProxyEnabled = status.enabled
             }
         } catch {
-            await MainActor.run {
-                alert = Alert(error)
-            }
+//            await MainActor.run {
+//                alert = Alert(error)
+//            }
         }
     }
 }

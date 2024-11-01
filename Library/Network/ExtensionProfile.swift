@@ -3,8 +3,6 @@ import Libbox
 import NetworkExtension
 
 public class ExtensionProfile: ObservableObject {
-    public static let controlKind = "io.nekohasekai.sfavt.widget.ServiceToggle"
-
     private let manager: NEVPNManager
     private var connection: NEVPNConnection
     private var observer: Any?
@@ -49,11 +47,6 @@ public class ExtensionProfile: ObservableObject {
         manager.isOnDemandEnabled = newState
         setOnDemandRules()
         try await manager.saveToPreferences()
-    }
-
-    @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
-    public func fetchLastDisconnectError() async throws {
-        try await connection.fetchLastDisconnectError()
     }
 
     public func start() async throws {
@@ -116,14 +109,14 @@ public class ExtensionProfile: ObservableObject {
 
     public static func install() async throws {
         let manager = NETunnelProviderManager()
-        manager.localizedDescription = Variant.applicationName
+        manager.localizedDescription = "Smart Proxy"
         let tunnelProtocol = NETunnelProviderProtocol()
         if Variant.useSystemExtension {
             tunnelProtocol.providerBundleIdentifier = "\(FilePath.packageName).system"
         } else {
             tunnelProtocol.providerBundleIdentifier = "\(FilePath.packageName).extension"
         }
-        tunnelProtocol.serverAddress = "sing-box"
+        tunnelProtocol.serverAddress = "SmartProxy"
         manager.protocolConfiguration = tunnelProtocol
         manager.isEnabled = true
         try await manager.saveToPreferences()

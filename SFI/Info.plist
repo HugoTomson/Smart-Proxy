@@ -4,7 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>io.nekohasekai.sfavt.update_profiles</string>
+		<string>kz.smart.inet.update_profiles</string>
 	</array>
 	<key>CFBundleDocumentTypes</key>
 	<array>
@@ -19,7 +19,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>io.nekohasekai.sfavt.profile</string>
+				<string>kz.smart.inet.profile</string>
 			</array>
 		</dict>
 	</array>
@@ -37,6 +37,16 @@
 				<string>sing-box</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>kz.smart.inet</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kodalink</string>
+			</array>
+		</dict>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
@@ -52,7 +62,7 @@
 	</dict>
 	<key>NSUbiquitousContainers</key>
 	<dict>
-		<key>iCloud.io.nekohasekai.sfavt</key>
+		<key>iCloud.kz.smart.inet</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
@@ -80,7 +90,7 @@
 			<key>UTTypeIconFiles</key>
 			<array/>
 			<key>UTTypeIdentifier</key>
-			<string>io.nekohasekai.sfavt.profile</string>
+			<string>kz.smart.inet.profile</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -106,7 +116,7 @@
 				<string>AppIcon.icns</string>
 			</array>
 			<key>UTTypeIdentifier</key>
-			<string>io.nekohasekai.sfavt.profile</string>
+			<string>kz.smart.inet.profile</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
